@@ -13,3 +13,10 @@ def send_message(message, chat_id):
         'parse_mode': 'MARKDOWN'
     }
     telegram_request('sendMessage', message_params)
+
+def delete_message(chat_id, message_id):
+    params = {
+      'chat_id': chat_id,
+      'message_id': message_id
+    }
+    telegram_request('deleteMessage', params)
