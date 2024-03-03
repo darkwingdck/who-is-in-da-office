@@ -32,7 +32,7 @@ OFFICE_MENU_PRESENCE_TRUE = {
     ]
 }
 
-OFFICE_MENU_PRESENCE_TRUE = {
+OFFICE_MENU_PRESENCE_FALSE = {
     'inline_keyboard': [
         [
             {

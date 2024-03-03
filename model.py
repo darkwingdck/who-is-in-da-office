@@ -1,21 +1,20 @@
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, Field
 
 class Company(BaseModel):
-    id: int = 0
-    name: str
+    id: str = ''
+    name: str = ''
     employees_count: int = 0
-    code: str
 
 class Lunch(BaseModel):
     id: int = 0
-    name: str
-    votes_count: int = 0
-    company_id: int
+    name: str = ''
+    votes_count: int = 1
+    company_id: str
 
 class User(BaseModel):
-    id: int = 0
-    name: str
-    chat_id: str
-    lunch_id: int = 0
-    company_id: int
-    present: bool = False
+    id: str = Field(..., description='The user ID is required')
+    name: Optional[str] = None
+    lunch_id: Optional[int] = None
+    company_id: Optional[str] = None
+    presence: Optional[bool] = None
