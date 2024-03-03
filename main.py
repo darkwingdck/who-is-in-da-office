@@ -21,6 +21,7 @@ def get_company_name_by_id(id):
     name = cursor.fetchone()[0]
     return name
 
+# users
 @app.post('/users')
 def add_user(user: User):
     query = QUERIES['add_user'].format(
@@ -39,8 +40,12 @@ def add_user(user: User):
 def get_users(user_id):
     query = QUERIES['get_users'].format(user_id=user_id)
     cursor.execute(query)
-    users = cursor.fetchall()
-    return users
+    users_rows = cursor.fetchall()
+    res = {}
+    for user in users_rows:
+        id, name = user
+        res[id] = name
+    return res
 
 @app.put('/users')
 def update_user(user: User):
@@ -64,13 +69,18 @@ def get_user(user_id: str):
         return user
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-######################
+
+# lunch
 @app.get('/lunch')
-def get_lunch_list(chat_id):
-    query = QUERIES['get_lunch_list'].format(chat_id=chat_id)
+def get_lunch_list(user_id):
+    query = QUERIES['get_lunch_list'].format(user_id=user_id)
     cursor.execute(query)
     lunch = cursor.fetchall()
     return lunch
+
+@app.post('/lunch')
+def add_lunch(lunch: Lunch):
+    query = QUERIES['add_lunch'].format(name=lunch.name, company_id=lunch.company_id)
 
 def update_user_lunch_id(lunch_id, chat_id):
     query = QUERIES['update_user_lunch_id'].format(lunch_id=lunch_id, chat_id=chat_id)
@@ -90,18 +100,52 @@ def add_lunch(lunch: Lunch):
     query = QUERIES['add_lunch'].format(lunch_name=lunch.name, company_id=lunch.company_id)
     cursor.execute(query)
 
-
-@app.post('/add_company')
+# company
+@app.post('/company')
 def add_company(company: Company):
-    query = QUERIES['add_company'].format(company_name=company.name, company_code=company.code)
-    cursor.execute(query)
+    query = QUERIES['add_company'].format(
+        id = company.id,
+        name = company.name,
+    )
+    try:
+        cursor.execute(query)
+        db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.get('/get_companies')
+@app.get('/company')
 def get_companies():
     query = QUERIES['get_companies']
-    cursor.execute(query)
-    companies = cursor.fetchall()
-    return companies
+    try:
+        cursor.execute(query)
+        companies_rows = cursor.fetchall()
+        res = {}
+        for company in companies_rows:
+            id, name, employees_count = company
+            res[id] = {
+                'name': name,
+                'employees_count': employees_count
+            }
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get('/company/{user_id}')
+def get_company(user_id: str) -> dict:
+    try:
+        query = QUERIES['get_company'].format(user_id=user_id)
+        cursor.execute(query)
+        company_row = cursor.fetchone()
+        if company_row:
+            id, name, employees_count = company_row
+            return {
+                'id': id,
+                'name': name,
+                'employees_count': employees_count
+            }
+        return {}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 def main():
     run(app, host="localhost", port=8001)

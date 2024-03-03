@@ -27,6 +27,7 @@ QUERIES = {
         SELECT name from Company
         WHERE id = "{id}";
         ''',
+
     # lunch
     'get_lunch_list': '''
         SELECT * FROM Lunch
@@ -55,17 +56,21 @@ QUERIES = {
         VALUES ("{lunch_name}", {company_id});
         ''',
 
-    # office
-
-
-    # others
+    # company
     'add_company': '''
-        INSERT INTO Company (name, code)
-        VALUES ("{company_name}", "{company_code}");
+        INSERT INTO Company (id, name)
+        VALUES ("{id}", "{name}");
         ''',
 
+    'get_company': '''
+        SELECT id, name, employees_count FROM Company
+        WHERE id = (
+            SELECT company_id FROM User
+            WHERE id = "{user_id}"
+        );
+        ''',
 
     'get_companies': '''
-        SELECT * FROM Company;
+        SELECT id, name, employees_count FROM Company;
         ''',
 }

@@ -34,19 +34,10 @@ def add_user(user_params):
     else:
         send_message(response.content, user_id)
 
-def transform_users_from_db(users) -> dict:
-    if not users: return {}
-    res = {}
-    for user in users:
-        id, name = user
-        res[id] = name
-    return res
-
 def get_users(user_id):
     response = get(f'{config.API_BASE_URL}/users', params={ 'user_id': user_id })
     if response.ok:
-        users = transform_users_from_db(response.json())
-        return users
+        return response.json()
     else:
         return {}
 
@@ -60,4 +51,4 @@ def toggle_user_presence(user_id, new_presence):
         message = content.presence_true_hint if new_presence else content.presence_false_hint
         send_message(message, user_id)
     else:
-        send_message(response.content, user_id) # DEBUG
+        send_message(response.content, user_id)
