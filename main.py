@@ -15,12 +15,6 @@ db = connect(
 
 cursor = db.cursor(buffered=True)
 
-def get_company_name_by_id(id):
-    query = QUERIES['get_company_name_by_id'].format(id=id)
-    cursor.execute(query)
-    name = cursor.fetchone()[0]
-    return name
-
 # users
 @app.post('/users')
 def add_user(user: User):
@@ -32,7 +26,7 @@ def add_user(user: User):
     try:
         cursor.execute(query)
         db.commit()
-        return get_company_name_by_id(user.company_id)
+        return get_company(user.id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -72,15 +66,17 @@ def get_user(user_id: str):
 
 # lunch
 @app.get('/lunch')
-def get_lunch_list(user_id):
-    query = QUERIES['get_lunch_list'].format(user_id=user_id)
+def get_lunches(user_id):
+    query = QUERIES['get_lunches'].format(user_id=user_id)
     cursor.execute(query)
-    lunch = cursor.fetchall()
-    return lunch
+    lunches = cursor.fetchall()
+    return lunches
 
 @app.post('/lunch')
 def add_lunch(lunch: Lunch):
     query = QUERIES['add_lunch'].format(name=lunch.name, company_id=lunch.company_id)
+    cursor.execute(query)
+    db.commit()
 
 def update_user_lunch_id(lunch_id, chat_id):
     query = QUERIES['update_user_lunch_id'].format(lunch_id=lunch_id, chat_id=chat_id)
@@ -92,12 +88,6 @@ def update_lunch_votes_count(lunch_id, chat_id):
     update_user_lunch_id(lunch_id, chat_id)
 
     query = QUERIES['update_lunch_votes_count'].format(lunch_id=lunch_id, chat_id=chat_id)
-    cursor.execute(query)
-
-# Добавить вариант обеда
-@app.post('/add_lunch')
-def add_lunch(lunch: Lunch):
-    query = QUERIES['add_lunch'].format(lunch_name=lunch.name, company_id=lunch.company_id)
     cursor.execute(query)
 
 # company

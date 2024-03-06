@@ -47,7 +47,7 @@ OFFICE_MENU_PRESENCE_FALSE = {
     ]
 }
 
-LUNCH_MENU = {
+EMPTY_LUNCH_MENU = {
     'inline_keyboard': [
         [
             {

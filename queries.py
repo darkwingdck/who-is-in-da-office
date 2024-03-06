@@ -29,11 +29,11 @@ QUERIES = {
         ''',
 
     # lunch
-    'get_lunch_list': '''
-        SELECT * FROM Lunch
+    'get_lunches': '''
+        SELECT id, name, votes_count FROM Lunch
         WHERE company_id = (
             SELECT company_id FROM User
-            WHERE chat_id = "{chat_id}"
+            WHERE id = "{user_id}"
         )
         ORDER BY votes_count DESC;
         ''',

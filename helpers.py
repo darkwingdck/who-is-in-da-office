@@ -8,7 +8,8 @@ from requests import get, post, put
 telegram_base_url = f'https://api.telegram.org/bot{config.TOKEN}'
 
 def telegram_request(method_name, params):
-    get(f'{telegram_base_url}/{method_name}', params)
+    r = get(f'{telegram_base_url}/{method_name}', params)
+    return r
 
 def send_message(message, user_id):
     message_params = {
@@ -40,6 +41,13 @@ def get_users(user_id):
         return response.json()
     else:
         return {}
+
+def get_lunches(user_id):
+    response = get(f'{config.API_BASE_URL}/lunch', params={ 'user_id': user_id })
+    if response.ok:
+        return response.json()
+    else:
+        return []
 
 def toggle_user_presence(user_id, new_presence):
     user_params = {
