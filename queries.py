@@ -40,15 +40,17 @@ QUERIES = {
 
     'update_user_lunch_id': '''
         UPDATE User SET lunch_id = {lunch_id}
-        WHERE chat_id = "{chat_id}";
+        WHERE id = "{id}";
         ''',
 
-    'update_lunch_votes_count': '''
+    'increase_lunch_votes_count': '''
         UPDATE Lunch SET votes_count = votes_count + 1
-        WHERE lunch_id = {lunch_id} and company_id = (
-            SELECT company_id FROM User
-            WHERE chat_id = "{chat_id}"
-        );
+        WHERE id = {id};
+        ''',
+
+    'decrease_lunch_votes_count': '''
+        UPDATE Lunch SET votes_count = votes_count - 1
+        WHERE id = {id};
         ''',
 
     'add_lunch': '''

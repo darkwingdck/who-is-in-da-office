@@ -11,7 +11,7 @@ MAIN_MENU = {
             },
             {
                 'text': content.lunch,
-                'callback_data': Button.LUNCH.value
+                'callback_data': Button.LUNCH_SHOW.value
             }
         ]
     ]
@@ -47,7 +47,7 @@ OFFICE_MENU_PRESENCE_FALSE = {
     ]
 }
 
-EMPTY_LUNCH_MENU = {
+BACK_MENU = {
     'inline_keyboard': [
         [
             {

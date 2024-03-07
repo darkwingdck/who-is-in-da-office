@@ -1,3 +1,4 @@
+from constants import Button
 import keyboards
 import helpers
 
@@ -14,13 +15,13 @@ def show_main_menu(chat_id):
     helpers.telegram_request('sendMessage', message_params)
 
 def create_lunches_keyboard(lunches):
-    result = deepcopy(keyboards.EMPTY_LUNCH_MENU)
+    result = deepcopy(keyboards.BACK_MENU)
     for i in range(len(lunches)):
         lunch = lunches[i]
         lunch_id = lunch[0]
         lunchItem = {
             'text': f'{i + 1}',
-            'callback_data': f'lunch_{lunch_id}',
+            'callback_data': f'{Button.LUNCH_VOTE}{lunch_id}',
         }
         result['inline_keyboard'][0].append(lunchItem)
     return result
@@ -39,11 +40,11 @@ def show_lunch_menu(user_id):
     message_text = ''
     keyboard = []
     if lunches:
-        message_text += 'Вот варианты, куда сходить на обед. Ты можешь проголосовать, либо добавить свой вариант, набрав команду /lynch <название варианта>'
+        message_text += 'Вот варианты, куда сходить на обед. Ты можешь проголосовать, либо добавить свой вариант, набрав команду /lunch <название варианта>'
         message_text += create_lunches_message(lunches)
         keyboard = create_lunches_keyboard(lunches)
     else:
-        keyboard = keyboards.EMPTY_LUNCH_MENU
+        keyboard = keyboards.BACK_MENU
         message_text += 'Похоже, пока никто не предложил, куда сходить на обед.\nЧтобы добавить варинт, набери команду /lunch <название варианта>'
     
     message_params = {

@@ -27,9 +27,15 @@ def handle_new_user(message):
     }
     helpers.add_user(user_params)
 
-def handle_lunch_vote(message):
-    pass
-
+def handle_lunch_vote(user_id, button):
+    button_parsed = button.split('_')
+    if len(button_parsed) != 3:
+        helpers.send_message('Ошибочка вышла! Попробуй проголосовать еще раз', user_id)
+        return
+    lunch_id = button_parsed[2]
+    helpers.update_user_lunch_id(user_id, lunch_id)
+    helpers.change_lunch_votes_count(lunch_id, 1)
+    
 def handle_unknown_command(message):
     user_id = message['chat']['id']
     helpers.send_message('Не понимаю тебя', user_id)
@@ -60,7 +66,7 @@ def handle_callback(callback_query):
     elif button == Button.OFFICE.value:
         handle_show_office_menu(user_id)
 
-    elif button == Button.LUNCH.value:
+    elif button == Button.LUNCH_SHOW.value:
         handle_show_lunch_menu(user_id)
 
     elif button == Button.PRESENCE_FALSE.value:
@@ -68,6 +74,9 @@ def handle_callback(callback_query):
 
     elif button == Button.PRESENCE_TRUE.value:
         handle_presence_toggle(user_id, True)
+    
+    elif Button.LUNCH_VOTE.value in button:
+        handle_lunch_vote(user_id, button)
 
 def handle_message(message):
     text = message['text']

@@ -7,7 +7,8 @@ class Command(Enum):
 
 class Button(Enum):
     OFFICE = 'office'
-    LUNCH = 'lunch'
+    LUNCH_SHOW = 'lunch_show'
+    LUNCH_VOTE = 'lunch_vote'
     BACK = 'back'
     PRESENCE_TRUE = 'presence_true'
     PRESENCE_FALSE = 'presence_false'

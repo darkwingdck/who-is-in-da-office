@@ -10,7 +10,7 @@ class Lunch(BaseModel):
     id: int = 0
     name: str = ''
     votes_count: int = 1
-    company_id: str
+    company_id: str = ''
 
 class User(BaseModel):
     id: str = Field(..., description='The user ID is required')

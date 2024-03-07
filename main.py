@@ -51,8 +51,12 @@ def update_user(user: User):
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     elif not user.lunch_id is None:
-        # updating user lunch
-        pass
+        try:
+            query = QUERIES['update_user_lunch_id'].format(id=user.id, lunch_id=user.lunch_id)
+            cursor.execute(query)
+            db.commit()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 @app.get('/users/{user_id}')
 def get_user(user_id: str):
@@ -65,29 +69,34 @@ def get_user(user_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 # lunch
-@app.get('/lunch')
+@app.get('/lunches')
 def get_lunches(user_id):
     query = QUERIES['get_lunches'].format(user_id=user_id)
     cursor.execute(query)
     lunches = cursor.fetchall()
     return lunches
 
-@app.post('/lunch')
+@app.post('/lunches')
 def add_lunch(lunch: Lunch):
     query = QUERIES['add_lunch'].format(name=lunch.name, company_id=lunch.company_id)
     cursor.execute(query)
     db.commit()
 
+@app.put('/lunches')
+def update_lunch(lunch: Lunch, change_direction='1'):
+    if lunch.votes_count is None: return
+    try:
+        if change_direction == '1':
+            query = QUERIES['increase_lunch_votes_count'].format(id=lunch.id)
+        else:
+            query = QUERIES['decrease_lunch_votes_count'].format(id=lunch.id)
+        cursor.execute(query)
+        db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 def update_user_lunch_id(lunch_id, chat_id):
     query = QUERIES['update_user_lunch_id'].format(lunch_id=lunch_id, chat_id=chat_id)
-    cursor.execute(query)
-
-# Проголосовать за обед
-@app.post('/vote')
-def update_lunch_votes_count(lunch_id, chat_id):
-    update_user_lunch_id(lunch_id, chat_id)
-
-    query = QUERIES['update_lunch_votes_count'].format(lunch_id=lunch_id, chat_id=chat_id)
     cursor.execute(query)
 
 # company
