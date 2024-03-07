@@ -63,7 +63,14 @@ def get_user(user_id: str):
     try:
         query = QUERIES['get_user'].format(id=user_id)
         cursor.execute(query)
-        user = cursor.fetchone()
+        user_row = cursor.fetchall()[0]
+        user = {
+            'id': user_row[0],
+            'name': user_row[1],
+            'presence': user_row[2],
+            'lunch_id': user_row[3],
+            'company_id': user_row[4]
+        }
         return user
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

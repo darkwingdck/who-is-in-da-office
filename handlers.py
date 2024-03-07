@@ -1,5 +1,4 @@
 import helpers
-
 import presenters
 import content
 
@@ -16,7 +15,7 @@ def handle_new_user(message):
     user_name = message['from']['username']
     text = message['text']
     text_parsed = text.split(' ')
-    if len(text_parsed) == 1:
+    if len(text_parsed) != 2:
         helpers.send_message('Неверный код компании', user_id)
         return
     company_id = text_parsed[1]
@@ -32,9 +31,13 @@ def handle_lunch_vote(user_id, button):
     if len(button_parsed) != 3:
         helpers.send_message('Ошибочка вышла! Попробуй проголосовать еще раз', user_id)
         return
-    lunch_id = button_parsed[2]
-    helpers.update_user_lunch_id(user_id, lunch_id)
-    helpers.change_lunch_votes_count(lunch_id, 1)
+    new_lunch_id = int(button_parsed[2])
+    user = helpers.get_user(user_id)
+    if user['lunch_id'] == new_lunch_id:
+        helpers.send_message('Второй раз проголосовать не получится((', user_id)
+    else:
+        helpers.update_user_lunch_id(user_id, new_lunch_id)
+        helpers.change_lunch_votes_count(new_lunch_id, 1)
     
 def handle_unknown_command(message):
     user_id = message['chat']['id']

@@ -21,7 +21,7 @@ def create_lunches_keyboard(lunches):
         lunch_id = lunch[0]
         lunchItem = {
             'text': f'{i + 1}',
-            'callback_data': f'{Button.LUNCH_VOTE}{lunch_id}',
+            'callback_data': f'{Button.LUNCH_VOTE.value}_{lunch_id}',
         }
         result['inline_keyboard'][0].append(lunchItem)
     return result

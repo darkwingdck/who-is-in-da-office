@@ -46,6 +46,13 @@ def get_users(user_id):
     else:
         return {}
 
+def get_user(user_id):
+    response = get(f'{config.API_BASE_URL}/users/{user_id}')
+    if response.ok:
+        return response.json()
+    else:
+        return {}
+
 def toggle_user_presence(user_id, new_presence):
     user_params = {
         'id': user_id,
