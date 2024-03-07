@@ -71,3 +71,11 @@ def change_lunch_votes_count(lunch_id, change_direction=1):
         'id': lunch_id,
     }
     return put(f'{config.API_BASE_URL}/lunches', json=lunch_params, params={ 'change_direction': change_direction })
+
+def add_lunch(lunch_name, company_id):
+    lunch_params = {
+        'name': lunch_name,
+        'company_id': company_id
+    }
+    return post(f'{config.API_BASE_URL}/lunches', json=lunch_params)
+    

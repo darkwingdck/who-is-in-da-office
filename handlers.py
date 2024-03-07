@@ -33,7 +33,23 @@ def handle_new_user(message):
         service.send_message('Ошибка!', user_id, keyboards.BACK_MENU)
 
 def handle_new_lunch(message):
-    pass
+    user_id = message['chat']['id']
+    text = message['text']
+    text_parsed = text.split(' ')
+    if len(text_parsed) == 1:
+        service.send_message('Чтобы предложить вариант, набери /lunch <название варианта>', user_id)
+        return
+    
+    lunch_name = ' '.join(text_parsed[1:])
+    
+    user = service.get_user(user_id)
+    response = service.add_lunch(lunch_name, user['company_id'])
+    message_text = ''
+    if response.ok:
+        message_text = 'Супер! Я записал твой вариант, можешь звать друзей голосовать'
+    else:
+        message_text = 'Что-то пошло не так!'
+    service.send_message(message_text, user_id, keyboards.BACK_MENU)
 
 def handle_unknown_command(message):
     user_id = message['chat']['id']
@@ -59,14 +75,14 @@ def handle_presence_toggle(user_id, new_presence):
 def handle_lunch_vote(user_id, button):
     button_parsed = button.split('_')
     if len(button_parsed) != 3:
-        service.send_message('Ошибочка вышла! Попробуй проголосовать еще раз', user_id)
+        service.send_message('Ошибочка вышла! Попробуй проголосовать еще раз', user_id, keyboards.BACK_MENU)
         return
 
     new_lunch_id = int(button_parsed[2])
     user = service.get_user(user_id)
 
     if user['lunch_id'] == new_lunch_id:
-        service.send_message('Второй раз проголосовать не получится((', user_id)
+        service.send_message('Второй раз проголосовать не получится((', user_id, keyboards.BACK_MENU)
         return
 
     user_update_response = service.update_user_lunch_id(user_id, new_lunch_id)

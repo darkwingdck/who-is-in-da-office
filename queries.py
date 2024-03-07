@@ -18,13 +18,13 @@ QUERIES = {
         WHERE id = "{id}";
         ''',
 
-    'get_user': '''
-        SELECT * FROM User
+    'update_user_lunch_id': '''
+        UPDATE User SET lunch_id = {lunch_id}
         WHERE id = "{id}";
         ''',
 
-    'get_company_name_by_id': '''
-        SELECT name from Company
+    'get_user': '''
+        SELECT * FROM User
         WHERE id = "{id}";
         ''',
 
@@ -36,11 +36,6 @@ QUERIES = {
             WHERE id = "{user_id}"
         )
         ORDER BY votes_count DESC;
-        ''',
-
-    'update_user_lunch_id': '''
-        UPDATE User SET lunch_id = {lunch_id}
-        WHERE id = "{id}";
         ''',
 
     'increase_lunch_votes_count': '''
@@ -55,7 +50,7 @@ QUERIES = {
 
     'add_lunch': '''
         INSERT INTO Lunch (name, company_id)
-        VALUES ("{lunch_name}", {company_id});
+        VALUES ("{name}", "{company_id}");
         ''',
 
     # company
