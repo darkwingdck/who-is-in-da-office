@@ -1,5 +1,4 @@
 from json import dumps
-from typing import List
 import config
 import content
 import presenters
@@ -10,8 +9,7 @@ from requests import get, post, put
 telegram_base_url = f'https://api.telegram.org/bot{config.TOKEN}'
 
 def telegram_request(method_name, params):
-    r = get(f'{telegram_base_url}/{method_name}', params)
-    return r
+    return get(f'{telegram_base_url}/{method_name}', params)
 
 def send_message(message, user_id, keyboard=None):
     message_params = {
@@ -71,7 +69,6 @@ def get_lunches(user_id):
         return response.json()
     else:
         return []
-
 
 def update_user_lunch_id(user_id, new_lunch_id):
     user_params = {

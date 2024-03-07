@@ -1,6 +1,6 @@
 from constants import Button
 import keyboards
-import helpers
+import service
 
 from copy import deepcopy
 from json import dumps
@@ -12,7 +12,7 @@ def show_main_menu(chat_id):
         'text': 'Выбери одну из опций!',
         'reply_markup': dumps(keyboards.MAIN_MENU)
     }
-    helpers.telegram_request('sendMessage', message_params)
+    service.telegram_request('sendMessage', message_params)
 
 def create_lunches_keyboard(lunches):
     result = deepcopy(keyboards.BACK_MENU)
@@ -36,7 +36,7 @@ def create_lunches_message(lunches):
     return result
 
 def show_lunch_menu(user_id):
-    lunches = helpers.get_lunches(user_id)
+    lunches = service.get_lunches(user_id)
     message_text = ''
     keyboard = []
     if lunches:
@@ -53,10 +53,10 @@ def show_lunch_menu(user_id):
         'parse_mode': 'MARKDOWN',
         'reply_markup': dumps(keyboard)
     }
-    helpers.telegram_request('sendMessage', message_params)
+    service.telegram_request('sendMessage', message_params)
 
 def show_office_menu(user_id):
-    users = helpers.get_users(user_id)
+    users = service.get_users(user_id)
     message_text = ''
     user_presence = False
     if users:
@@ -73,4 +73,4 @@ def show_office_menu(user_id):
         'text': message_text,
         'reply_markup': dumps(keyboard)
     }
-    helpers.telegram_request('sendMessage', message_params)
+    service.telegram_request('sendMessage', message_params)
