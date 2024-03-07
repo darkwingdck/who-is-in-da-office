@@ -1,4 +1,8 @@
+import config
+
 from enum import Enum
+
+TELEGRAM_BASE_URL = f'https://api.telegram.org/bot{config.TOKEN}'
 
 class Command(Enum):
     START = '/start'

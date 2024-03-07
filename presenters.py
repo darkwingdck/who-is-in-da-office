@@ -1,7 +1,8 @@
-from constants import Button
 import keyboards
 import service
+import content
 
+from constants import Button
 from copy import deepcopy
 from json import dumps
 
@@ -67,10 +68,8 @@ def show_office_menu(user_id):
     else:
         message_text += 'Похоже, пока в офис никто не собирается. Будь первым!'
     keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE
-    message_params = {
-        'parse_mode': 'MARKDOWN',
-        'chat_id': user_id,
-        'text': message_text,
-        'reply_markup': dumps(keyboard)
-    }
-    service.telegram_request('sendMessage', message_params)
+    service.send_message(message_text, user_id, keyboard)
+
+def show_presence_menu(user_id, new_presence):
+    message = content.presence_true_hint if new_presence else content.presence_false_hint
+    service.send_message(message, user_id, keyboards.BACK_MENU)
