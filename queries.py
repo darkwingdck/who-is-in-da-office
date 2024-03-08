@@ -35,7 +35,8 @@ QUERIES = {
             SELECT company_id FROM User
             WHERE id = "{user_id}"
         )
-        ORDER BY votes_count DESC;
+        ORDER BY votes_count DESC
+        LIMIT 7;
         ''',
 
     'increase_lunch_votes_count': '''
@@ -51,6 +52,10 @@ QUERIES = {
     'add_lunch': '''
         INSERT INTO Lunch (name, company_id)
         VALUES ("{name}", "{company_id}");
+        ''',
+
+    'get_last_lunch': '''
+        SELECT id FROM Lunch ORDER BY id DESC LIMIT 1;
         ''',
 
     # company

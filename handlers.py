@@ -43,9 +43,14 @@ def handle_new_lunch(message):
     lunch_name = ' '.join(text_parsed[1:])
     
     user = service.get_user(user_id)
-    response = service.add_lunch(lunch_name, user['company_id'])
+
+    if not user['lunch_id'] is None:
+        service.change_lunch_votes_count(user['lunch_id'], -1)
+    new_lunch_id = service.add_lunch(lunch_name, user['company_id'])
+    change_user_lunch_response = service.update_user_lunch_id(user['id'], new_lunch_id)
+
     message_text = ''
-    if response.ok:
+    if  change_user_lunch_response.ok:
         message_text = 'Супер! Я записал твой вариант, можешь звать друзей голосовать'
     else:
         message_text = 'Что-то пошло не так!'
@@ -86,9 +91,13 @@ def handle_lunch_vote(user_id, button):
         return
 
     user_update_response = service.update_user_lunch_id(user_id, new_lunch_id)
-    lunch_update_response = service.change_lunch_votes_count(new_lunch_id, 1)
+    
+    if not user['lunch_id'] is None:
+        service.change_lunch_votes_count(user['lunch_id'], -1)
+    new_lunch_update_response = service.change_lunch_votes_count(new_lunch_id, 1)
+    
     message_text = ''
-    if user_update_response.ok and lunch_update_response.ok:
+    if user_update_response.ok and new_lunch_update_response.ok:
         message_text = 'Ваш голос очень важен для нас!'
     else:
         message_text = 'Ошибка!'

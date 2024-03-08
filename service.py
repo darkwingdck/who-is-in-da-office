@@ -77,5 +77,6 @@ def add_lunch(lunch_name, company_id):
         'name': lunch_name,
         'company_id': company_id
     }
-    return post(f'{config.API_BASE_URL}/lunches', json=lunch_params)
+    response = post(f'{config.API_BASE_URL}/lunches', json=lunch_params)
+    return response.json()
     

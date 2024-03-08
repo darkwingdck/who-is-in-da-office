@@ -108,6 +108,11 @@ def add_lunch(lunch: Lunch):
         query = QUERIES['add_lunch'].format(name=lunch.name, company_id=lunch.company_id)
         cursor.execute(query)
         db.commit()
+
+        query = QUERIES['get_last_lunch']
+        cursor.execute(query)
+        lunch_id = cursor.fetchone()[0]
+        return lunch_id
     except Exception as e:
         logging.error(str(e))
         raise HTTPException(status_code=500)

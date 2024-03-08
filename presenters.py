@@ -24,7 +24,10 @@ def create_lunches_keyboard(lunches):
             'text': f'{i + 1}',
             'callback_data': f'{Button.LUNCH_VOTE.value}_{lunch_id}',
         }
-        result['inline_keyboard'][0].append(lunchItem)
+        if i == 3:
+            result['inline_keyboard'].append([])
+        row = i // 3 if i != 6 else 1
+        result['inline_keyboard'][row].append(lunchItem)
     return result
 
 def create_lunches_message(lunches):
