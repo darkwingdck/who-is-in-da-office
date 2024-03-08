@@ -16,6 +16,16 @@ def send_message(message, user_id, keyboard=None):
         message_params['reply_markup'] = dumps(keyboard)
     telegram_request('sendMessage', message_params)
 
+def edit_message(message, user_id, message_id, keyboard=None):
+    message_params = {
+        'text': message,
+        'chat_id': str(user_id),
+        'message_id': message_id
+    }
+    if not keyboard is None:
+        message_params['reply_markup'] = dumps(keyboard)
+    telegram_request('editMessageText', message_params)
+
 def delete_message(user_id, message_id):
     params = {
         'chat_id': str(user_id),
@@ -79,4 +89,3 @@ def add_lunch(lunch_name, company_id):
     }
     response = post(f'{config.API_BASE_URL}/lunches', json=lunch_params)
     return response.json()
-    

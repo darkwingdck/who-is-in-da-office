@@ -4,16 +4,13 @@ import content
 
 from constants import Button
 from copy import deepcopy
-from json import dumps
 
-def show_main_menu(chat_id):
-    message_params = {
-        'parse_mode': 'MARKDOWN',
-        'chat_id': chat_id,
-        'text': 'Выбери одну из опций!',
-        'reply_markup': dumps(keyboards.MAIN_MENU)
-    }
-    service.telegram_request('sendMessage', message_params)
+def show_main_menu(user_id, message_id=None):
+    message_text = 'Выбери одну из опций!'
+    if not message_id is None:
+        service.edit_message(message_text, user_id, message_id, keyboards.MAIN_MENU)
+    else:
+        service.send_message(message_text, user_id, keyboards.MAIN_MENU)
 
 def create_lunches_keyboard(lunches):
     result = deepcopy(keyboards.BACK_MENU)
@@ -39,7 +36,7 @@ def create_lunches_message(lunches):
         result += lunch_line
     return result
 
-def show_lunch_menu(user_id):
+def show_lunch_menu(user_id, message_id):
     lunches = service.get_lunches(user_id)
     message_text = ''
     keyboard = []
@@ -50,16 +47,9 @@ def show_lunch_menu(user_id):
     else:
         keyboard = keyboards.BACK_MENU
         message_text += 'Похоже, пока никто не предложил, куда сходить на обед.\nЧтобы добавить варинт, набери команду /lunch <название варианта>'
-    
-    message_params = {
-        'chat_id': user_id,
-        'text': message_text,
-        'parse_mode': 'MARKDOWN',
-        'reply_markup': dumps(keyboard)
-    }
-    service.telegram_request('sendMessage', message_params)
+    service.edit_message(message_text, user_id, message_id, keyboard)
 
-def show_office_menu(user_id):
+def show_office_menu(user_id, message_id=None):
     users = service.get_users(user_id)
     message_text = ''
     user_presence = False
@@ -71,8 +61,11 @@ def show_office_menu(user_id):
     else:
         message_text += 'Похоже, пока в офис никто не собирается. Будь первым!'
     keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE
-    service.send_message(message_text, user_id, keyboard)
+    if not message_id is None:
+        service.edit_message(message_text, user_id, message_id, keyboard)
+    else:
+        service.send_message(message_text, user_id, keyboard)
 
-def show_presence_menu(user_id, new_presence):
-    message = content.presence_true_hint if new_presence else content.presence_false_hint
-    service.send_message(message, user_id, keyboards.BACK_MENU)
+def show_presence_menu(user_id, message_id, new_presence):
+    message_text = content.presence_true_hint if new_presence else content.presence_false_hint
+    service.edit_message(message_text, user_id, message_id, keyboards.BACK_MENU)

@@ -79,6 +79,9 @@ def get_user(user_id: str):
         query = QUERIES['get_user'].format(id=user_id)
         cursor.execute(query)
         user_row = cursor.fetchall()[0]
+
+        if not user_row: return {}
+
         return {
             'id': user_row[0],
             'name': user_row[1],
