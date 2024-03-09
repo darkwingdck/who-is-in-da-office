@@ -7,7 +7,7 @@ from uvicorn import run
 app = FastAPI()
 
 logging.basicConfig(
-    filename='../logs/bot.log',
+    filename='logs/bot.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
