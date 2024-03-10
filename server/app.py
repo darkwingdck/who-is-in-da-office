@@ -29,6 +29,7 @@ def add_user(user: User):
     query = QUERIES['add_user'].format(
         id = user.id,
         name = user.name,
+        nickname = user.nickname,
         company_id = user.company_id
     )
     try:
@@ -47,8 +48,10 @@ def get_users(user_id):
         users_rows = cursor.fetchall()
         res = {}
         for user in users_rows:
-            id, name = user
-            res[id] = name
+            id, name, nickname = user
+            res[id] = { 'name': name }
+            if nickname != 'None':
+                res[id]['nickname'] = nickname
         return res
     except Exception as e:
         logging.error(str(e))
@@ -78,16 +81,17 @@ def get_user(user_id: str):
     try:
         query = QUERIES['get_user'].format(id=user_id)
         cursor.execute(query)
-        user_row = cursor.fetchall()[0]
+        user_row = cursor.fetchone()
 
         if not user_row: return {}
 
         return {
             'id': user_row[0],
             'name': user_row[1],
-            'presence': user_row[2],
-            'lunch_id': user_row[3],
-            'company_id': user_row[4]
+            'nickname': user_row[2],
+            'presence': user_row[3],
+            'lunch_id': user_row[4],
+            'company_id': user_row[5]
         }
     except Exception as e:
         logging.error(str(e))

@@ -1,12 +1,12 @@
 QUERIES = {
     # users
     'add_user': '''
-        INSERT INTO User (id, name, company_id)
-        VALUES ("{id}", "{name}", "{company_id}");
+        INSERT INTO User (id, name, nickname, company_id)
+        VALUES ("{id}", "{name}", "{nickname}", "{company_id}");
         ''',
 
     'get_users': '''
-        SELECT id, name FROM User
+        SELECT id, name, nickname FROM User
         WHERE presence = true and company_id = (
             SELECT company_id FROM User
             WHERE id = "{user_id}"

@@ -19,15 +19,12 @@ def get_user_name(message):
     first_name = message['from']['first_name']
     last_name = message['from']['last_name'] if 'last_name' in message['from'] else ''
 
-    if 'username' in message['from']:
-        username = message['from']['username']
-        return f'[{first_name} {last_name}](https://t.me/{username})'
-    else:
-        return f'{first_name} {last_name}'
+    nickname = message['from']['username'] if 'username' in message['from'] else ''
+    return f'{first_name} {last_name}', nickname
 
 def handle_new_user(message):
     user_id = message['chat']['id']
-    user_name = get_user_name(message)
+    user_name, user_nickname = get_user_name(message)
     text = message['text']
     text_parsed = text.split(' ')
     if len(text_parsed) != 2:
@@ -39,6 +36,8 @@ def handle_new_user(message):
         'company_id': company_id,
         'name': user_name
     }
+    if user_nickname:
+        user_params['nickname'] = user_nickname
     company = service.add_user(user_params)
     if company:
         service.send_message(f'Добро пожаловать в компанию {company["name"]}!', user_id)

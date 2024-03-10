@@ -57,7 +57,13 @@ def show_office_menu(user_id, message_id=None):
         message_text += 'Вот список людей, которые идут в офис:\n\n'
         user_presence = user_id in list(users.keys())
         for i, key in enumerate(users):
-            message_text += f'{i + 1}. {users[key]}\n'
+            user = users[key]
+            message_text += f'{i + 1}. '
+            if 'nickname' in user:
+                message_text += f'[{user["name"]}](https://t.me/{user["nickname"]})'
+            else:
+                message_text += user['name']
+            message_text += '\n'
     else:
         message_text += 'Похоже, пока в офис никто не собирается. Будь первым!'
     keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE

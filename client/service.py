@@ -10,7 +10,11 @@ def telegram_request(method_name, params):
 def send_message(message, user_id, keyboard=None):
     message_params = {
         'chat_id': str(user_id),
-        'text': message
+        'text': message,
+        'parse_mode': 'MARKDOWN',
+        'link_preview_options': dumps({
+            'is_disabled': True
+        })
     }
     if not keyboard is None:
         message_params['reply_markup'] = dumps(keyboard)
@@ -20,7 +24,11 @@ def edit_message(message, user_id, message_id, keyboard=None):
     message_params = {
         'text': message,
         'chat_id': str(user_id),
-        'message_id': message_id
+        'message_id': message_id,
+        'parse_mode': 'MARKDOWN',
+        'link_preview_options': dumps({
+            'is_disabled': True
+        })
     }
     if not keyboard is None:
         message_params['reply_markup'] = dumps(keyboard)

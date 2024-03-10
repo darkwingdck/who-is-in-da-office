@@ -22,6 +22,7 @@ CREATE TABLE User (
     id VARCHAR(255) NOT NULL UNIQUE, -- chat_id пользователя
     PRIMARY KEY (id),
     name VARCHAR(255) NOT NULL,
+    nickname VARCHAR(255),
     presence BOOLEAN NOT NULL DEFAULT False,
     lunch_id INT,
     company_id VARCHAR(255) NOT NULL,
@@ -39,5 +40,5 @@ VALUES ('test-pass', 'test-company');
 INSERT INTO Lunch (name, company_id)
 VALUES ('test-lunch', 'test-pass');
 
-INSERT INTO User (id, name, company_id)
-VALUES ('12345678', 'test-user', 'test-pass')
+INSERT INTO User (id, name, nickname, company_id)
+VALUES ('12345678', 'test-user', 'test-nickname', 'test-pass')

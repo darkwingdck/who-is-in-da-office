@@ -15,6 +15,7 @@ class Lunch(BaseModel):
 class User(BaseModel):
     id: str = Field(..., description='The user ID is required')
     name: Optional[str] = None
+    nickname: Optional[str] = None
     lunch_id: Optional[int] = None
     company_id: Optional[str] = None
     presence: Optional[bool] = None
