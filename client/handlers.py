@@ -28,7 +28,7 @@ def handle_new_user(message):
     text = message['text']
     text_parsed = text.split(' ')
     if len(text_parsed) != 2:
-        service.send_message('Неверный код компании', user_id)
+        service.send_message(content.company_code_incorrect, user_id)
         return
     company_id = text_parsed[1]
     user_params = {
@@ -40,17 +40,16 @@ def handle_new_user(message):
         user_params['nickname'] = user_nickname
     company = service.add_user(user_params)
     if company:
-        service.send_message(f'Добро пожаловать в компанию {company["name"]}!', user_id)
-        presenters.show_main_menu(user_id)
+        service.send_message(content.company_welcome.format(company['name']), user_id, keyboards.MAIN_MENU)
     else:
-        service.send_message('Ошибка!', user_id, keyboards.BACK_MENU)
+        service.send_message(content.company_404, user_id)
 
 def handle_new_lunch(message):
     user_id = message['chat']['id']
     text = message['text']
     text_parsed = text.split(' ')
     if len(text_parsed) == 1:
-        service.send_message('Чтобы предложить вариант, набери /lunch <название варианта>', user_id)
+        service.send_message(content.lunch_incorrect, user_id)
         return
 
     lunch_name = ' '.join(text_parsed[1:])
@@ -64,14 +63,14 @@ def handle_new_lunch(message):
 
     message_text = ''
     if change_user_lunch_response.ok:
-        message_text = 'Супер! Я записал твой вариант, можешь звать друзей голосовать'
+        message_text =  content.lunch_success
     else:
-        message_text = 'Что-то пошло не так!'
+        message_text = content.error_common
     service.send_message(message_text, user_id, keyboards.BACK_MENU)
 
 def handle_unknown_command(message):
     user_id = message['chat']['id']
-    service.send_message('Не понимаю тебя', user_id)
+    service.send_message(content.error_unknown_command, user_id)
 
 # CALLBACKS
 def handle_show_main_menu(user_id, message_id):
@@ -89,20 +88,20 @@ def handle_presence_toggle(user_id, message_id, new_presence):
     if response.ok:
         presenters.show_presence_menu(user_id, message_id, new_presence)
     else:
-        service.edit_message('Ошибка!', user_id, message_id, keyboards.BACK_MENU)
+        service.edit_message(content.error_common, user_id, message_id, keyboards.BACK_MENU)
 
 def handle_lunch_vote(user_id, message_id, button):
     button_parsed = button.split('_')
 
     if len(button_parsed) != 3:
-        service.send_message('Ошибочка вышла! Попробуй проголосовать еще раз', user_id, keyboards.BACK_MENU)
+        service.send_message(content.error_common, user_id, keyboards.BACK_MENU)
         return
 
     new_lunch_id = int(button_parsed[2])
     user = service.get_user(user_id)
 
     if user['lunch_id'] == new_lunch_id:
-        service.edit_message('Второй раз проголосовать не получится((', user_id, message_id, keyboards.BACK_MENU)
+        service.edit_message(content.vote_double, user_id, message_id, keyboards.BACK_MENU)
         return
 
     user_update_response = service.update_user_lunch_id(user_id, new_lunch_id)
@@ -112,9 +111,9 @@ def handle_lunch_vote(user_id, message_id, button):
 
     message_text = ''
     if user_update_response.ok and new_lunch_update_response.ok:
-        message_text = 'Ваш голос очень важен для нас!'
+        message_text = content.vote_success
     else:
-        message_text = 'Ошибка!'
+        message_text = content.error_common
     service.edit_message(message_text, user_id, message_id, keyboards.BACK_MENU)
 
 def handle_callback(callback_query):
@@ -146,7 +145,7 @@ def handle_message(message):
     if Command.START.value in text:
         handle_start_message(message)
 
-    elif Command.SIGN_UP.value in text:
+    elif Command.SIGN.value in text:
         handle_new_user(message)
 
     elif Command.LUNCH.value in text:

@@ -6,7 +6,7 @@ TELEGRAM_BASE_URL = f'https://api.telegram.org/bot{config.TOKEN}'
 
 class Command(Enum):
     START = '/start'
-    SIGN_UP = '/sign_up'
+    SIGN = '/sign'
     LUNCH = '/lunch'
 
 class Button(Enum):

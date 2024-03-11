@@ -6,7 +6,7 @@ from constants import Button
 from copy import deepcopy
 
 def show_main_menu(user_id, message_id=None):
-    message_text = 'Выбери одну из опций!'
+    message_text = content.choose_option
     if not message_id is None:
         service.edit_message(message_text, user_id, message_id, keyboards.MAIN_MENU)
     else:
@@ -41,12 +41,12 @@ def show_lunch_menu(user_id, message_id):
     message_text = ''
     keyboard = []
     if lunches:
-        message_text += 'Вот варианты, куда сходить на обед. Ты можешь проголосовать, либо добавить свой вариант, набрав команду /lunch <название варианта>'
+        message_text += content.lunch_variants
         message_text += create_lunches_message(lunches)
         keyboard = create_lunches_keyboard(lunches)
     else:
         keyboard = keyboards.BACK_MENU
-        message_text += 'Похоже, пока никто не предложил, куда сходить на обед.\nЧтобы добавить варинт, набери команду /lunch <название варианта>'
+        message_text += content.lunch_empty
     service.edit_message(message_text, user_id, message_id, keyboard)
 
 def show_office_menu(user_id, message_id=None):
@@ -54,7 +54,7 @@ def show_office_menu(user_id, message_id=None):
     message_text = ''
     user_presence = False
     if users:
-        message_text += 'Вот список людей, которые идут в офис:\n\n'
+        message_text += content.users_list
         user_presence = user_id in list(users.keys())
         for i, key in enumerate(users):
             user = users[key]
@@ -65,7 +65,7 @@ def show_office_menu(user_id, message_id=None):
                 message_text += user['name']
             message_text += '\n'
     else:
-        message_text += 'Похоже, пока в офис никто не собирается. Будь первым!'
+        message_text += content.office_empty
     keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE
     if not message_id is None:
         service.edit_message(message_text, user_id, message_id, keyboard)
@@ -73,5 +73,5 @@ def show_office_menu(user_id, message_id=None):
         service.send_message(message_text, user_id, keyboard)
 
 def show_presence_menu(user_id, message_id, new_presence):
-    message_text = content.presence_true_hint if new_presence else content.presence_false_hint
+    message_text = content.presence_true_response if new_presence else content.presence_false_response
     service.edit_message(message_text, user_id, message_id, keyboards.BACK_MENU)
