@@ -25,6 +25,10 @@ def get_user_name(message):
 def handle_new_user(message):
     user_id = message['chat']['id']
     user_name, user_nickname = get_user_name(message)
+    user = service.get_user(user_id)
+    if user:
+        service.send_message(content.company_change, user_id, keyboards.MAIN_MENU)
+        return
     text = message['text']
     text_parsed = text.split(' ')
     if len(text_parsed) != 2:
