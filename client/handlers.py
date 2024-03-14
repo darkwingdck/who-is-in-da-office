@@ -120,10 +120,20 @@ def handle_lunch_vote(user_id, message_id, button):
         message_text = content.error_common
     service.edit_message(message_text, user_id, message_id, keyboards.BACK_MENU)
 
+def handle_unknown_user(user_id, message_id):
+    message_text = content.hello_message
+    service.edit_message(message_text, user_id, message_id)
+
 def handle_callback(callback_query):
     user_id = str(callback_query['message']['chat']['id'])
     message_id = str(callback_query['message']['message_id'])
     button = callback_query['data']
+
+    user = service.get_user(user_id)
+
+    if not user:
+        handle_unknown_user(user_id, message_id)
+        return
 
     if button == Button.BACK.value:
         handle_show_main_menu(user_id, message_id)
