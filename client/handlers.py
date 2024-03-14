@@ -72,6 +72,10 @@ def handle_new_lunch(message):
         message_text = content.error_common
     service.send_message(message_text, user_id, keyboards.BACK_MENU)
 
+def handle_help(message):
+    user_id = message['chat']['id']
+    service.send_message(content.help_message, user_id)
+
 def handle_unknown_command(message):
     user_id = message['chat']['id']
     service.send_message(content.error_unknown_command, user_id)
@@ -164,6 +168,9 @@ def handle_message(message):
 
     elif Command.LUNCH.value in text:
         handle_new_lunch(message)
+
+    elif Command.HELP.value in text:
+        handle_help(message)
 
     else:
         handle_unknown_command(message)

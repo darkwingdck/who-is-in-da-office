@@ -8,6 +8,7 @@ class Command(Enum):
     START = '/start'
     SIGN = '/sign'
     LUNCH = '/lunch'
+    HELP = '/help'
 
 class Button(Enum):
     OFFICE = 'office'
