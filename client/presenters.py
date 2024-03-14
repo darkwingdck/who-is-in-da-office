@@ -16,24 +16,22 @@ def create_lunches_keyboard(lunches):
     result = deepcopy(keyboards.BACK_MENU)
     for i in range(len(lunches)):
         lunch = lunches[i]
-        lunch_id = lunch[0]
-        lunchItem = {
+        lunch_item = {
             'text': f'{i + 1}',
-            'callback_data': f'{Button.LUNCH_VOTE.value}_{lunch_id}',
+            'callback_data': f'{Button.LUNCH_VOTE.value}_{lunch["id"]}'
         }
         if i == 3:
             result['inline_keyboard'].append([])
         row = i // 3 if i != 6 else 1
-        result['inline_keyboard'][row].append(lunchItem)
+        result['inline_keyboard'][row].append(lunch_item)
     return result
 
 def create_lunches_message(lunches):
     result = '\n\n'
     for i in range(len(lunches)):
         lunch = lunches[i]
-        _, lunch_name, lunch_votes_count = lunch
-        lunch_line = f'{i + 1}. {lunch_name} - {lunch_votes_count} голосов\n'
-        result += lunch_line
+        lunch_item = f'{i + 1}. {lunch["name"]} - {lunch["votes_count"]} голосов\n'
+        result += lunch_item
     return result
 
 def show_lunch_menu(user_id, message_id):

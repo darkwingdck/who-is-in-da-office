@@ -103,8 +103,16 @@ def get_lunches(user_id):
     try:
         query = QUERIES['get_lunches'].format(user_id=user_id)
         cursor.execute(query)
-        lunches = cursor.fetchall()
-        return lunches
+        lunches_rows = cursor.fetchall()
+        res = []
+        for lunch in lunches_rows:
+            id, name, votes_count = lunch
+            res.append({
+                'id': id,
+                'name': name,
+                'votes_count': votes_count
+            })
+        return res
     except Exception as e:
         logging.error(str(e))
         raise HTTPException(status_code=500)
