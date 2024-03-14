@@ -16,7 +16,7 @@ def send_message(message, user_id, keyboard=None):
             'is_disabled': True
         })
     }
-    if not keyboard is None:
+    if keyboard is not None:
         message_params['reply_markup'] = dumps(keyboard)
     telegram_request('sendMessage', message_params)
 
@@ -30,7 +30,7 @@ def edit_message(message, user_id, message_id, keyboard=None):
             'is_disabled': True
         })
     }
-    if not keyboard is None:
+    if keyboard is not None:
         message_params['reply_markup'] = dumps(keyboard)
     telegram_request('editMessageText', message_params)
 

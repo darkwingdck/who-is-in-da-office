@@ -59,7 +59,7 @@ def get_users(user_id):
 
 @app.put('/users')
 def update_user(user: User):
-    if not user.presence is None:
+    if user.presence is not None:
         try:
             query = QUERIES['update_user_presence'].format(id=user.id, presence=user.presence)
             cursor.execute(query)
@@ -67,7 +67,7 @@ def update_user(user: User):
         except Exception as e:
             logging.error(str(e))
             raise HTTPException(status_code=500)
-    elif not user.lunch_id is None:
+    elif user.lunch_id is not None:
         try:
             query = QUERIES['update_user_lunch_id'].format(id=user.id, lunch_id=user.lunch_id)
             cursor.execute(query)

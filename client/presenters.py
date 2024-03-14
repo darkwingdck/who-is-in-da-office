@@ -7,7 +7,7 @@ from copy import deepcopy
 
 def show_main_menu(user_id, message_id=None):
     message_text = content.choose_option
-    if not message_id is None:
+    if message_id is not None:
         service.edit_message(message_text, user_id, message_id, keyboards.MAIN_MENU)
     else:
         service.send_message(message_text, user_id, keyboards.MAIN_MENU)
@@ -67,7 +67,7 @@ def show_office_menu(user_id, message_id=None):
     else:
         message_text += content.office_empty
     keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE
-    if not message_id is None:
+    if message_id is not None:
         service.edit_message(message_text, user_id, message_id, keyboard)
     else:
         service.send_message(message_text, user_id, keyboard)
