@@ -132,15 +132,51 @@ def add_lunch(lunch: Lunch):
         logging.error(str(e))
         raise HTTPException(status_code=500)
 
+@app.get('/lunches/{lunch_id}')
+def get_lunch(lunch_id: int):
+    try:
+        query = QUERIES['get_lunch'].format(id=lunch_id)
+        cursor.execute(query)
+        lunch_row = cursor.fetchone()
+        res = {}
+        if lunch_row:
+            id, name, votes_count, _ = lunch_row
+            res = {
+                'id': id,
+                'name': name,
+                'votes_count': votes_count
+            }
+        return res
+    except Exception as e:
+        logging.error(str(e))
+        raise HTTPException(status_code=500)
+
+@app.delete('/lunches')
+def delete_lunch(lunch_id: int):
+    try:
+        query = QUERIES['delete_lunch'].format(id=lunch_id)
+        cursor.execute(query)
+        db.commit()
+    except Exception as e:
+        logging.error(str(e))
+        raise HTTPException(status_code=500)
+
+
 @app.put('/lunches')
 def update_lunch(lunch: Lunch, change_direction='1'):
     try:
         if change_direction == '1':
             query = QUERIES['increase_lunch_votes_count'].format(id=lunch.id)
+            cursor.execute(query)
+            db.commit()
         else:
+            current_votes_count = get_lunch(lunch.id)['votes_count']
+            if current_votes_count == 1:
+                delete_lunch(lunch.id)
+                return
             query = QUERIES['decrease_lunch_votes_count'].format(id=lunch.id)
-        cursor.execute(query)
-        db.commit()
+            cursor.execute(query)
+            db.commit()
     except Exception as e:
         logging.error(str(e))
         raise HTTPException(status_code=500)

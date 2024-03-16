@@ -54,9 +54,17 @@ QUERIES = {
         VALUES ("{name}", "{company_id}");
         ''',
 
+    'get_lunch': '''
+        SELECT * FROM Lunch WHERE id = {id};
+    ''',
+
     'get_last_lunch': '''
         SELECT id FROM Lunch ORDER BY id DESC LIMIT 1;
         ''',
+
+    'delete_lunch': '''
+        DELETE FROM Lunch WHERE id = {id};
+    ''',
 
     # company
     'add_company': '''

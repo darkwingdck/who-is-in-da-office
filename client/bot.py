@@ -1,6 +1,6 @@
 import logging
-import handlers
 
+from handlers import Message, Callback
 from fastapi import FastAPI
 from uvicorn import run
 
@@ -16,9 +16,9 @@ logging.basicConfig(
 def root(update: dict):
     try:
         if 'message' in update and 'text' in update['message']:
-            handlers.handle_message(update['message'])
+            Message(update['message'])
         elif 'callback_query' in update:
-            handlers.handle_callback(update['callback_query'])
+            Callback(update['callback_query'])
     except Exception as e:
         logging.error(str(e))
 
