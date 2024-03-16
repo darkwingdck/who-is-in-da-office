@@ -6,123 +6,118 @@ from service import TelegramBotAPI, UserAPI, LunchAPI
 from constants import Button, Command
 
 class Handler:
-    def __init__(self) -> None:
-        self.telegramBotAPI = TelegramBotAPI()
+    def __init__(self, user_id) -> None:
+        self.telegramBotAPI = TelegramBotAPI(user_id)
         self.userAPI = UserAPI()
         self.lunchAPI = LunchAPI()
 
 class Message(Handler):
     def __init__(self, message) -> None:
-        super().__init__()
-        self.mainMenu = MainMenu()
+        self.user_id = str(self.message['chat']['id'])
+        super().__init__(self.user_id)
+
         self.message = message
+        self.text = self.message['text']
+        self.command_args = self.text.split(' ')
+        self.user = self.userAPI.get_user(self.user_id)
 
-        text = message['text']
+        self.mainMenu = MainMenu(self.user_id)
 
-        if Command.START.value in text:
+        if Command.START.value in self.text:
             self.start()
 
-        elif Command.SIGN.value in text:
+        elif Command.SIGN.value in self.text:
             self.sign()
 
-        elif Command.LUNCH.value in text:
+        elif Command.LUNCH.value in self.text:
             self.lunch()
 
-        elif Command.HELP.value in text:
+        elif Command.HELP.value in self.text:
             self.help()
 
         else:
-            self.unknown()
+            self.unknown_command()
 
     def start(self):
-        user_id = self.message['chat']['id']
-        user = self.userAPI.get_user(user_id)
-        if user:
-            self.mainMenu.show(user_id)
+        if self.user:
+            self.mainMenu.show()
         else:
-            self.telegramBotAPI.send_message(content.hello_message, user_id)
+            self.telegramBotAPI.send_message(content.hello_message, self.user_id)
 
     def __get_user_name(self):
         first_name = self.message['from']['first_name']
         last_name = self.message['from']['last_name'] if 'last_name' in self.message['from'] else ''
-
         nickname = self.message['from']['username'] if 'username' in self.message['from'] else ''
+
         return f'{first_name} {last_name}', nickname
 
     def sign(self):
-        user_id = self.message['chat']['id']
+        if self.user:
+            self.telegramBotAPI.send_message(content.company_change, keyboards.MAIN_MENU)
+            return
+
+        if len(self.command_args) != 2:
+            self.telegramBotAPI.send_message(content.company_code_incorrect)
+            return
+
         user_name, user_nickname = self.__get_user_name()
-        user = self.userAPI.get_user(user_id)
-        if user:
-            self.telegramBotAPI.send_message(content.company_change, user_id, keyboards.MAIN_MENU)
-            return
-        text = self.message['text']
-        text_parsed = text.split(' ')
-        if len(text_parsed) != 2:
-            self.telegramBotAPI.send_message(content.company_code_incorrect, user_id)
-            return
-        company_id = text_parsed[1]
+        user_company_id = self.command_args[1]
         user_params = {
-            'id': str(user_id),
-            'company_id': company_id,
+            'id': self.user_id,
+            'company_id': user_company_id,
             'name': user_name
         }
         if user_nickname:
             user_params['nickname'] = user_nickname
         company = self.userAPI.add_user(user_params)
+
         if company:
-            self.telegramBotAPI.send_message(content.company_welcome.format(company['name']), user_id, keyboards.MAIN_MENU)
+            self.telegramBotAPI.send_message(content.company_welcome.format(company['name']), keyboards.MAIN_MENU)
         else:
-            self.telegramBotAPI.send_message(content.company_404, user_id)
+            self.telegramBotAPI.send_message(content.company_404)
 
     def lunch(self):
-        user_id = self.message['chat']['id']
-        text = self.message['text']
-        text_parsed = text.split(' ')
-        if len(text_parsed) == 1:
-            self.telegramBotAPI.send_message(content.lunch_incorrect, user_id)
+        if len(self.command_args) == 1:
+            self.telegramBotAPI.send_message(content.lunch_incorrect)
             return
 
-        lunch_name = ' '.join(text_parsed[1:])
+        if not self.user:
+            self.telegramBotAPI.send_message(content.hello_message)
+            return
 
-        user = self.userAPI.get_user(user_id)
+        if self.user['lunch_id'] is not None:
+            self.lunchAPI.change_lunch_votes_count(self.user['lunch_id'], -1)
 
-        if user['lunch_id'] is not None:
-            self.lunchAPI.change_lunch_votes_count(user['lunch_id'], -1)
-        new_lunch_id = self.lunchAPI.add_lunch(lunch_name, user['company_id'])
-        change_user_lunch_response = self.userAPI.update_user_lunch_id(user['id'], new_lunch_id)
+        new_lunch_name = ' '.join(self.command_args[1:])
+        new_lunch_id = self.lunchAPI.add_lunch(new_lunch_name, self.user['company_id'])
 
-        message_text = ''
-        if change_user_lunch_response.ok:
-            message_text =  content.lunch_success
-        else:
-            message_text = content.error_common
-        self.telegramBotAPI.send_message(message_text, user_id, keyboards.BACK_MENU)
+        response = self.userAPI.update_user_lunch_id(self.user['id'], new_lunch_id)
+        message_text = content.lunch_success if response.ok else content.error_common
+
+        self.telegramBotAPI.send_message(message_text, keyboards.BACK_MENU)
 
     def help(self):
-        user_id = self.message['chat']['id']
-        self.telegramBotAPI.send_message(content.help_message, user_id)
+        self.telegramBotAPI.send_message(content.help_message)
 
-    def unknown(self):
-        user_id = self.message['chat']['id']
-        self.telegramBotAPI.send_message(content.error_unknown_command, user_id)
+    def unknown_command(self):
+        self.telegramBotAPI.send_message(content.error_unknown_command)
 
 class Callback(Handler):
     def __init__(self, callback_query) -> None:
-        super().__init__()
-
-        self.presenceMenu = PresenceMenu()
-        self.mainMenu = MainMenu()
-        self.officeMenu = OfficeMenu()
-        self.lunchMenu = LunchMenu()
-
         self.user_id = str(callback_query['message']['chat']['id'])
+        super().__init__(self.user_id)
+
         self.message_id = str(callback_query['message']['message_id'])
         self.button = callback_query['data']
 
-        user = self.userAPI.get_user(self.user_id)
+        self.presenceMenu = PresenceMenu(self.user_id, self.message_id)
+        self.mainMenu = MainMenu(self.user_id, self.message_id)
+        self.officeMenu = OfficeMenu(self.user_id, self.message_id)
+        self.lunchMenu = LunchMenu(self.user_id, self.message_id)
 
-        if not user:
+        self.user = self.userAPI.get_user(self.user_id)
+
+        if not self.user:
             self.unknown_user()
 
         elif self.button == Button.BACK.value:
@@ -144,39 +139,38 @@ class Callback(Handler):
             self.vote()
 
     def show_main_menu(self):
-        self.mainMenu.show(self.user_id, self.message_id)
+        self.mainMenu.show()
     
     def show_office_menu(self):
-        self.officeMenu.show(self.user_id, self.message_id)
+        self.officeMenu.show()
 
     def show_lunch_menu(self):
-        self.lunchMenu.show(self.user_id, self.message_id)
+        self.lunchMenu.show()
 
     def toggle_presence(self, new_presence):
         response = self.userAPI.toggle_user_presence(self.user_id, new_presence)
 
         if response.ok:
-            self.presenceMenu.show(self.user_id, self.message_id, new_presence)
+            self.presenceMenu.show(new_presence)
         else:
-            self.telegramBotAPI.edit_message(content.error_common, self.user_id, self.message_id, keyboards.BACK_MENU)
+            self.telegramBotAPI.edit_message(content.error_common, self.message_id, keyboards.BACK_MENU)
 
     def vote(self):
         button_parsed = self.button.split('_')
 
         if len(button_parsed) != 3:
-            self.telegramBotAPI.send_message(content.error_common, self.user_id, keyboards.BACK_MENU)
+            self.telegramBotAPI.send_message(content.error_common, keyboards.BACK_MENU)
             return
 
         new_lunch_id = int(button_parsed[2])
-        user = self.userAPI.get_user(self.user_id)
 
-        if user['lunch_id'] == new_lunch_id:
-            self.telegramBotAPI.edit_message(content.vote_double, self.user_id, self.message_id, keyboards.BACK_MENU)
+        if self.user['lunch_id'] == new_lunch_id:
+            self.telegramBotAPI.edit_message(content.vote_double, self.message_id, keyboards.BACK_MENU)
             return
 
         user_update_response = self.userAPI.update_user_lunch_id(self.user_id, new_lunch_id)
-        if user['lunch_id'] is not None:
-            self.lunchAPI.change_lunch_votes_count(user['lunch_id'], -1)
+        if self.user['lunch_id'] is not None:
+            self.lunchAPI.change_lunch_votes_count(self.user['lunch_id'], -1)
         new_lunch_update_response = self.lunchAPI.change_lunch_votes_count(new_lunch_id, 1)
 
         message_text = ''
@@ -184,8 +178,7 @@ class Callback(Handler):
             message_text = content.vote_success
         else:
             message_text = content.error_common
-        self.telegramBotAPI.edit_message(message_text, self.user_id, self.message_id, keyboards.BACK_MENU)
+        self.telegramBotAPI.edit_message(message_text, self.message_id, keyboards.BACK_MENU)
 
     def unknown_user(self):
-        message_text = content.hello_message
-        self.telegramBotAPI.edit_message(message_text, self.user_id, self.message_id)
+        self.telegramBotAPI.edit_message(content.hello_message, self.message_id)

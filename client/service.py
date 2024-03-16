@@ -5,15 +5,16 @@ from json import dumps
 from requests import get, post, put
 
 class TelegramBotAPI():
-    def __init__(self) -> None:
+    def __init__(self, user_id) -> None:
         self.base_url = f'{constants.TELEGRAM_BASE_URL}'
+        self.user_id = user_id
 
     def send_request(self, method_name, params) -> None:
         get(f'{self.base_url}/{method_name}', params)
 
-    def send_message(self, message, user_id, keyboard=None) -> None:
+    def send_message(self, message, keyboard=None) -> None:
         message_params = {
-            'chat_id': str(user_id),
+            'chat_id': self.user_id,
             'text': message,
             'parse_mode': 'MARKDOWN',
             'link_preview_options': dumps({
@@ -24,10 +25,10 @@ class TelegramBotAPI():
             message_params['reply_markup'] = dumps(keyboard)
         self.send_request('sendMessage', message_params)
 
-    def edit_message(self, message, user_id, message_id, keyboard=None) -> None:
+    def edit_message(self, message, message_id, keyboard=None) -> None:
         message_params = {
             'text': message,
-            'chat_id': str(user_id),
+            'chat_id': self.user_id,
             'message_id': message_id,
             'parse_mode': 'MARKDOWN',
             'link_preview_options': dumps({
@@ -38,9 +39,9 @@ class TelegramBotAPI():
             message_params['reply_markup'] = dumps(keyboard)
         self.send_request('editMessageText', message_params)
 
-    def delete_message(self, user_id, message_id) -> None:
+    def delete_message(self, message_id) -> None:
         params = {
-            'chat_id': str(user_id),
+            'chat_id': self.user_id,
             'message_id': message_id
         }
         self.send_request('deleteMessage', params)
