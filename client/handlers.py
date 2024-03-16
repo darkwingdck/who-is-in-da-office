@@ -13,13 +13,13 @@ class Handler:
 
 class Message(Handler):
     def __init__(self, message) -> None:
+        self.message = message
         self.user_id = str(self.message['chat']['id'])
         super().__init__(self.user_id)
 
-        self.message = message
         self.text = self.message['text']
         self.command_args = self.text.split(' ')
-        self.user = self.userAPI.get_user(self.user_id)
+        self.user = self.userAPI.get_user(self.user_id) # TODO: 1. handle error 2. should return type User
 
         self.mainMenu = MainMenu(self.user_id)
 
@@ -51,6 +51,18 @@ class Message(Handler):
 
         return f'{first_name} {last_name}', nickname
 
+    def __get_user_params(self):
+        user_name, user_nickname = self.__get_user_name()
+        user_company_id = self.command_args[1]
+        result = {
+            'id': self.user_id,
+            'company_id': user_company_id,
+            'name': user_name
+        }
+        if user_nickname:
+            result['nickname'] = user_nickname
+        return result
+
     def sign(self):
         if self.user:
             self.telegramBotAPI.send_message(content.company_change, keyboards.MAIN_MENU)
@@ -60,29 +72,21 @@ class Message(Handler):
             self.telegramBotAPI.send_message(content.company_code_incorrect)
             return
 
-        user_name, user_nickname = self.__get_user_name()
-        user_company_id = self.command_args[1]
-        user_params = {
-            'id': self.user_id,
-            'company_id': user_company_id,
-            'name': user_name
-        }
-        if user_nickname:
-            user_params['nickname'] = user_nickname
-        company = self.userAPI.add_user(user_params)
+        user_params = self.__get_user_params()
+        company_name = self.userAPI.add_user(user_params)
 
-        if company:
-            self.telegramBotAPI.send_message(content.company_welcome.format(company['name']), keyboards.MAIN_MENU)
+        if company_name:
+            self.telegramBotAPI.send_message(content.company_welcome.format(company_name), keyboards.MAIN_MENU)
         else:
             self.telegramBotAPI.send_message(content.company_404)
 
     def lunch(self):
-        if len(self.command_args) == 1:
-            self.telegramBotAPI.send_message(content.lunch_incorrect)
-            return
-
         if not self.user:
             self.telegramBotAPI.send_message(content.hello_message)
+            return
+
+        if len(self.command_args) == 1:
+            self.telegramBotAPI.send_message(content.lunch_incorrect)
             return
 
         if self.user['lunch_id'] is not None:
@@ -140,7 +144,7 @@ class Callback(Handler):
 
     def show_main_menu(self):
         self.mainMenu.show()
-    
+
     def show_office_menu(self):
         self.officeMenu.show()
 

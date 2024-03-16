@@ -35,7 +35,7 @@ def add_user(user: User):
     try:
         cursor.execute(query)
         db.commit()
-        return get_company(user.id)
+        return get_company(user.id)['name']
     except Exception as e:
         logging.error(str(e))
         raise HTTPException(status_code=500)

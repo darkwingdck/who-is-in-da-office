@@ -68,25 +68,30 @@ class LunchMenu(Menu):
 class OfficeMenu(Menu):
     def __init__(self, user_id, message_id=None) -> None:
         super().__init__(user_id, message_id)
+    
+    def __create_message(self, users):
+        if not users:
+            return content.office_empty
+
+        result = content.users_list
+        for i, key in enumerate(users):
+            user = users[key]
+            result += f'{i + 1}. '
+            if 'nickname' in user:
+                result += f'[{user["name"]}](https://t.me/{user["nickname"]})'
+            else:
+                result += user['name']
+            result += '\n'
+        return result
+
 
     def show(self):
         users = self.userAPI.get_users(self.user_id)
-        message_text = ''
-        user_presence = False
-        if users:
-            message_text += content.users_list
-            user_presence = self.user_id in list(users.keys())
-            for i, key in enumerate(users):
-                user = users[key]
-                message_text += f'{i + 1}. '
-                if 'nickname' in user:
-                    message_text += f'[{user["name"]}](https://t.me/{user["nickname"]})'
-                else:
-                    message_text += user['name']
-                message_text += '\n'
-        else:
-            message_text += content.office_empty
+        message_text = self.__create_message(users)
+        user_presence = self.user_id in list(users.keys()) if users else False
+
         keyboard = keyboards.OFFICE_MENU_PRESENCE_FALSE if user_presence else keyboards.OFFICE_MENU_PRESENCE_TRUE
+
         if self.message_id is not None:
             self.telegramBotAPI.edit_message(message_text, self.message_id, keyboard)
         else:

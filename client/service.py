@@ -47,8 +47,11 @@ class TelegramBotAPI():
         self.send_request('deleteMessage', params)
 
 class UserAPI:
+    def __init__(self) -> None:
+        self.base_url = f'{config.API_BASE_URL}/users'
+
     def add_user(self, user_params):
-        response = post(f'{config.API_BASE_URL}/users', json=user_params)
+        response = post(self.base_url, json=user_params)
         if response.ok:
             company_name = response.json()
             return company_name
@@ -56,14 +59,14 @@ class UserAPI:
             return ''
 
     def get_user(self, user_id):
-        response = get(f'{config.API_BASE_URL}/users/{user_id}')
+        response = get(f'{self.base_url}/{user_id}')
         if response.ok:
             return response.json()
         else:
             return {}
 
     def get_users(self, user_id):
-        response = get(f'{config.API_BASE_URL}/users', params={ 'user_id': user_id })
+        response = get(self.base_url, params={ 'user_id': user_id })
         if response.ok:
             return response.json()
         else:
@@ -74,18 +77,21 @@ class UserAPI:
             'id': user_id,
             'presence': new_presence,
         }
-        return put(f'{config.API_BASE_URL}/users', json=user_params)
+        return put(self.base_url, json=user_params)
 
     def update_user_lunch_id(self, user_id, new_lunch_id):
         user_params = {
             'id': user_id,
             'lunch_id': new_lunch_id,
         }
-        return put(f'{config.API_BASE_URL}/users', json=user_params)
+        return put(self.base_url, json=user_params)
 
 class LunchAPI:
+    def __init__(self) -> None:
+        self.base_url = f'{config.API_BASE_URL}/lunches'
+
     def get_lunches(self, user_id):
-        response = get(f'{config.API_BASE_URL}/lunches', params={ 'user_id': user_id })
+        response = get(self.base_url, params={ 'user_id': user_id })
         if response.ok:
             return response.json()
         else:
@@ -95,12 +101,12 @@ class LunchAPI:
         lunch_params = {
             'id': lunch_id,
         }
-        return put(f'{config.API_BASE_URL}/lunches', json=lunch_params, params={ 'change_direction': change_direction })
+        return put(self.base_url, json=lunch_params, params={ 'change_direction': change_direction })
 
     def add_lunch(self, lunch_name, company_id):
         lunch_params = {
             'name': lunch_name,
             'company_id': company_id
         }
-        response = post(f'{config.API_BASE_URL}/lunches', json=lunch_params)
+        response = post(self.base_url, json=lunch_params)
         return response.json()
