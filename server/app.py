@@ -12,7 +12,8 @@ db = connect(
     host = "localhost",
     user = "root",
     password = "mint",
-    database = "office_database"
+    database = "office_database",
+    autocommit = True
 )
 
 cursor = db.cursor(buffered=True)

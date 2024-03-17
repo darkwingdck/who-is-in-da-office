@@ -6,7 +6,7 @@ QUERIES = {
         ''',
 
     'get_users': '''
-        SELECT id, name, nickname FROM User
+        SELECT SQL_NO_CACHE id, name, nickname FROM User
         WHERE presence = true and company_id = (
             SELECT company_id FROM User
             WHERE id = "{user_id}"
@@ -24,13 +24,13 @@ QUERIES = {
         ''',
 
     'get_user': '''
-        SELECT * FROM User
+        SELECT SQL_NO_CACHE * FROM User
         WHERE id = "{id}";
         ''',
 
     # lunch
     'get_lunches': '''
-        SELECT id, name, votes_count FROM Lunch
+        SELECT SQL_NO_CACHE id, name, votes_count FROM Lunch
         WHERE company_id = (
             SELECT company_id FROM User
             WHERE id = "{user_id}"
@@ -55,11 +55,11 @@ QUERIES = {
         ''',
 
     'get_lunch': '''
-        SELECT * FROM Lunch WHERE id = {id};
+        SELECT SQL_NO_CACHE * FROM Lunch WHERE id = {id};
     ''',
 
     'get_last_lunch': '''
-        SELECT id FROM Lunch ORDER BY id DESC LIMIT 1;
+        SELECT SQL_NO_CACHE id FROM Lunch ORDER BY id DESC LIMIT 1;
         ''',
 
     'delete_lunch': '''
@@ -73,7 +73,7 @@ QUERIES = {
         ''',
 
     'get_company': '''
-        SELECT id, name, employees_count FROM Company
+        SELECT SQL_NO_CACHE id, name, employees_count FROM Company
         WHERE id = (
             SELECT company_id FROM User
             WHERE id = "{user_id}"
@@ -81,6 +81,19 @@ QUERIES = {
         ''',
 
     'get_companies': '''
-        SELECT id, name, employees_count FROM Company;
+        SELECT SQL_NO_CACHE id, name, employees_count FROM Company;
         ''',
+
+    # reset_db
+    'reset_user_lunch_id': '''
+        UPDATE User SET lunch_id = NULL;
+    ''',
+
+    'reset_user_presence': '''
+        UPDATE User SET presence = false;
+    ''',
+
+    'reset_lunch': '''
+        DELETE FROM Lunch;
+    '''
 }
