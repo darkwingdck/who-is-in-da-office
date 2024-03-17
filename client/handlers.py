@@ -89,10 +89,15 @@ class Message(Handler):
             self.telegramBotAPI.send_message(content.lunch_incorrect)
             return
 
+        new_lunch_name = ' '.join(self.command_args[1:])
+        lunches = self.lunchAPI.get_lunches(self.user_id)
+        if any(lunch['name'].lower() == new_lunch_name.lower() for lunch in lunches):
+            self.telegramBotAPI.send_message(content.lunch_double, keyboards.BACK_MENU)            
+            return
+
         if self.user['lunch_id'] is not None:
             self.lunchAPI.change_lunch_votes_count(self.user['lunch_id'], -1)
 
-        new_lunch_name = ' '.join(self.command_args[1:])
         new_lunch_id = self.lunchAPI.add_lunch(new_lunch_name, self.user['company_id'])
 
         response = self.userAPI.update_user_lunch_id(self.user['id'], new_lunch_id)
