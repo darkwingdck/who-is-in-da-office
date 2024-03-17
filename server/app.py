@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 
 from fastapi import FastAPI, HTTPException
@@ -231,7 +233,7 @@ def get_company(user_id: str) -> dict:
         raise HTTPException(status_code=500)
 
 def main():
-    run(app, host="localhost", port=8001)
+    run(app, host="0.0.0.0", port=8001)
 
 if __name__ == "__main__":
     main()

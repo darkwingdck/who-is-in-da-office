@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 
 from handlers import Message, Callback
@@ -23,7 +25,7 @@ def root(update: dict):
         logging.error(str(e))
 
 def main():
-    run(app, host="localhost", port=8000)
+    run(app, host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
     main()
