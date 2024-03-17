@@ -29,16 +29,3 @@ CREATE TABLE User (
     FOREIGN KEY (lunch_id) REFERENCES Lunch(id),
     FOREIGN KEY (company_id) REFERENCES Company(id)
 );
-
-DESCRIBE Company;
-DESCRIBE Lunch;
-DESCRIBE User;
-
-INSERT INTO Company (id, name)
-VALUES ('test-pass', 'test-company');
-
-INSERT INTO Lunch (name, company_id)
-VALUES ('test-lunch', 'test-pass');
-
-INSERT INTO User (id, name, nickname, company_id)
-VALUES ('12345678', 'test-user', 'test-nickname', 'test-pass')
