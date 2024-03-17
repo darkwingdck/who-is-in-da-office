@@ -95,13 +95,14 @@ class Message(Handler):
             self.telegramBotAPI.send_message(content.lunch_double, keyboards.BACK_MENU)            
             return
 
-        if self.user['lunch_id'] is not None:
-            self.lunchAPI.change_lunch_votes_count(self.user['lunch_id'], -1)
 
         new_lunch_id = self.lunchAPI.add_lunch(new_lunch_name, self.user['company_id'])
-
         response = self.userAPI.update_user_lunch_id(self.user['id'], new_lunch_id)
+
         message_text = content.lunch_success if response.ok else content.error_common
+
+        if self.user['lunch_id'] is not None:
+            self.lunchAPI.change_lunch_votes_count(self.user['lunch_id'], -1)
 
         self.telegramBotAPI.send_message(message_text, keyboards.BACK_MENU)
 
