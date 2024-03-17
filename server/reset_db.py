@@ -2,7 +2,7 @@ import logging
 
 from mysql.connector import connect
 from queries import QUERIES
-from server.config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USER
+from config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USER
 
 db = connect(
     host = DB_HOST,
