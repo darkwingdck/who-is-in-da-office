@@ -3,16 +3,17 @@ import logging
 from fastapi import FastAPI, HTTPException
 from mysql.connector import connect
 from uvicorn import run
+from config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USER
 from queries import QUERIES
 from model import Company, Lunch, User
 
 app = FastAPI()
 
 db = connect(
-    host = "localhost",
-    user = "root",
-    password = "mint",
-    database = "office_database",
+    host = DB_HOST,
+    user = DB_USER,
+    password = DB_PASSWORD,
+    database = DB_DATABASE,
     autocommit = True
 )
 
