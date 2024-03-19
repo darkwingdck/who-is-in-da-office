@@ -42,7 +42,7 @@ class Message(Handler):
         if self.user:
             self.mainMenu.show()
         else:
-            self.telegramBotAPI.send_message(content.hello_message, self.user_id)
+            self.telegramBotAPI.send_message(content.hello_message)
 
     def __get_user_name(self):
         first_name = self.message['from']['first_name']
