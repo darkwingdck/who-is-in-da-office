@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import logging
 
 from fastapi import FastAPI, HTTPException
@@ -8,6 +6,7 @@ from uvicorn import run
 from config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USER
 from queries import QUERIES
 from model import Company, Lunch, User
+from config import ENV, SSL_CERTFILE_PATH, SSL_KEYFILE_PATH
 
 app = FastAPI()
 
@@ -233,7 +232,10 @@ def get_company(user_id: str) -> dict:
         raise HTTPException(status_code=500)
 
 def main():
-    run(app, host="0.0.0.0", port=8001)
+    if ENV == 'DEV':
+        run(app, host="0.0.0.0", port=8001)
+    else:
+        run(app, host="0.0.0.0", port=8001, ssl_keyfile=SSL_KEYFILE_PATH, ssl_certfile=SSL_CERTFILE_PATH)
 
 if __name__ == "__main__":
     main()

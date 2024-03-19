@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 import logging
 
+from config import ENV, SSL_CERTFILE_PATH, SSL_KEYFILE_PATH
 from handlers import Message, Callback
 from fastapi import FastAPI
 from uvicorn import run
@@ -25,7 +24,10 @@ def root(update: dict):
         logging.error(str(e))
 
 def main():
-    run(app, host="0.0.0.0", port=8000)
+    if ENV == 'DEV':
+        run(app, host="0.0.0.0", port=8000)
+    elif ENV == 'PROD':
+        run(app, host="0.0.0.0", port=8443, ssl_keyfile=SSL_KEYFILE_PATH, ssl_certfile=SSL_CERTFILE_PATH)
 
 if __name__ == "__main__":
     main()
